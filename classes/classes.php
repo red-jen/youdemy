@@ -1,35 +1,33 @@
 <?php
 
-class Database {
-    private $host = 'localhost';
-    private $dbname = 'Youdemy';
-    private $user = 'root';
-    private $pass = 'Ren-ji24';
-
-    public function connect(): PDO {
-        $dsn = "mysql:host={$this->host};dbname={$this->dbname}";
-        try {
-            $pdo = new PDO($dsn, $this->user, $this->pass, [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES => false
-            ]);
-            return $pdo;
-        } catch (PDOException $e) {
-            // Handle connection errors
-            die("Database connection failed: " . $e->getMessage());
-        }
-    }
-}
-
+require_once('classes/config.inc.php');
 
 class Visitor {
-    public function searchCourses(string $keyword): array {
-        return [];
+    public function searchCourses(string $keyword){
+            $db = new database();
+            $conn =$db->connect();
+            $stmt = $conn->prepare("SELECT * FROM course WHERE title LIKE ?");
+            
+        
+            $stmt->execute(["%$keyword%"]);
+
+            $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $courses;
     }
 
-    public static function viewCourseCatalog(): array {
-        return [];
+    public static function viewCourseCatalog() {
+        $db = new Database();
+        $conn = $db->connect();
+
+       
+            
+            $stmt = $conn->prepare("SELECT * FROM course");
+            $stmt->execute();
+
+         
+            $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $courses; 
     }
 
     public static function registerUser($userData) {
@@ -164,18 +162,18 @@ $connection = $db->connect();
 }
 
 // Example usage
-$userData = [
-    'name' => 'John Doe',
-    'email' => 'johndoe@example.com',
-    'password' => 'Password123',
-    'passwordRepeat' => 'Password123',
-    'role' => 'Student'
-];
+// $userData = [
+//     'name' => 'John Doe',
+//     'email' => 'johndoe@example.com',
+//     'password' => 'Password123',
+//     'passwordRepeat' => 'Password123',
+//     'role' => 'Student'
+// ];
 
-$result = Visitor::registerUser($userData);
+// $result = Visitor::registerUser($userData);
 
-if ($result['success']) {
-    echo $result['message'];
-} else {
-    echo "Registration failed: " . implode(', ', $result['errors']);
-}
+// if ($result['success']) {
+//     echo $result['message'];
+// } else {
+//     echo "Registration failed: " . implode(', ', $result['errors']);
+// }

@@ -3,8 +3,8 @@ class Visitor {
      
 
 
-    public function searchCourses(string $keyword): array {
-        // Implementation for course search
+    public function searchCourses(string $keyword) {
+        
         return [];
     }
 

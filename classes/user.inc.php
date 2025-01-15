@@ -1,5 +1,8 @@
 <?php
-require_once('classes/config.inc.php');
+require_once('config.inc.php');
+require_once('student.inc.php');
+require_once('admin.inc.php');
+require_once('teacher.inc.php');
 // class User {
 //     private $id;
 //     private $name;
@@ -83,15 +86,15 @@ class User {
     // private $status; // For account status (active, suspended, pending)
     private $createdAt;
     // private $lastLogin;
-
-    public function __construct($id, $name, $email, $password, $role) {
+  
+    public function __construct($id, $name, $email, $password, $role,$createdAt) {
         $this->id = $id;
         $this->name = $name;
         $this->email = $email;
         $this->password = $password;
         $this->role = $role;
         // $this->status = 'pending'; // Default status for new users
-        $this->createdAt = date('Y-m-d H:i:s');
+        $this->createdAt = $createdAt ; //date('Y-m-d H:i:s');
         // $this->lastLogin = null;
     }
 
@@ -110,12 +113,12 @@ class User {
     // public function setStatus($status) { $this->status = $status; }
 
     // Enhanced login method
-    public function login($email, $password) {
+    static  function login($email, $password) {
         $db = new Database();
         $conn = $db->connect();
         
-        $stmt = $conn->prepare("SELECT * FROM user WHERE email = ? "); // add this for statu//AND status = 'active'
-        $stmt->execute([$email]);
+        $stmt = $conn->prepare("SELECT * FROM user WHERE email = ? or name = ?"); // add this for statu//AND status = 'active'
+        $stmt->execute([$email , $email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if (!$user) {
@@ -129,14 +132,21 @@ class User {
         // Update last login time
         // $updateStmt = $conn->prepare("UPDATE user SET last_login = NOW() WHERE id = ?");
         // $updateStmt->execute([$user['id']]);
+         if($user['role'] == 'student'){
+
+            $_SESSION['user'] =serialize( new Student($user['id'],$user['name'],$user['email'],$user['password'],$user['created_at']));
+    }else  if($user['role'] == 'Teacher'){
+
+        $_SESSION['user'] =serialize( new Teacher($user['id'],$user['name'],$user['email'],$user['password'],$user['created_at']));
+    }else  if($user['role'] == 'admin'){
+
+        $_SESSION['user'] = serialize(new Admin($user['id'],$user['name'],$user['email'],$user['password'],$user['created_at']));
+    }else{
+
+        return false;
+    }
         
-        $_SESSION['user'] = [
-            'id' => $user['id'],
-            'name' => $user['name'],
-            'role' => $user['role'],
-            'status' => $user['status']
-        ];
-        
+
         return ['success' => true, 'message' => 'Login successful'];
     }
 
@@ -144,6 +154,7 @@ class User {
     public function logout() {
         session_unset();
         session_destroy();
+        
         return true;
     }
 
@@ -176,33 +187,33 @@ class User {
     // }
 
     // Update user profile
-    public function updateProfile($userData) {
-        $db = new Database();
-        $conn = $db->connect();
+    // public function updateProfile($userData) {
+    //     $db = new Database();
+    //     $conn = $db->connect();
         
-        $allowedFields = ['name', 'email'];
-        $updates = [];
-        $params = [];
+    //     $allowedFields = ['name', 'email'];
+    //     $updates = [];
+    //     $params = [];
         
-        foreach ($allowedFields as $field) {
-            if (isset($userData[$field])) {
-                $updates[] = "$field = ?";
-                $params[] = $userData[$field];
-            }
-        }
+    //     foreach ($allowedFields as $field) {
+    //         if (isset($userData[$field])) {
+    //             $updates[] = "$field = ?";
+    //             $params[] = $userData[$field];
+    //         }
+    //     }
         
-        if (empty($updates)) {
-            return ['success' => false, 'message' => 'No fields to update'];
-        }
+    //     if (empty($updates)) {
+    //         return ['success' => false, 'message' => 'No fields to update'];
+    //     }
         
-        $params[] = $this->id;
-        $sql = "UPDATE user SET " . implode(', ', $updates) . " WHERE id = ?";
+    //     $params[] = $this->id;
+    //     $sql = "UPDATE user SET " . implode(', ', $updates) . " WHERE id = ?";
         
-        $stmt = $conn->prepare($sql);
-        $success = $stmt->execute($params);
+    //     $stmt = $conn->prepare($sql);
+    //     $success = $stmt->execute($params);
         
-        return ['success' => $success, 'message' => $success ? 'Profile updated' : 'Update failed'];
-    }
+    //     return ['success' => $success, 'message' => $success ? 'Profile updated' : 'Update failed'];
+    // }
 
     // Check if user is logged in
     public function isLoggedIn() {

@@ -17,7 +17,7 @@
      ];
 
      $result = Visitor::registerUser($userData);
-
+      header('Location : login.php');
      if ($result['success']) {
          $success_message = $result['message'];
      } else {

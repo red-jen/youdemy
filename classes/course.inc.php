@@ -35,6 +35,17 @@ class Course {
             $this->categoryId,
             $this->teacherId
         ]);
+        $this->getid();
+    }
+    public function getid(){
+        $db = new Database();
+        $conn = $db->connect();
+        
+        $stmt = $conn->query("select * from course where title = $this->title and teacherId = $this->teacherId ");
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $this->id = $result['id'];
+        return $this->id;
+        
     }
 
     public static function search($keyword) {

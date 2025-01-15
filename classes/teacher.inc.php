@@ -13,18 +13,19 @@ class Teacher extends User {
         $db = new Database();
         $conn = $db->connect();
         $ncourse = new Course(  $courseData['title'],$courseData['description'],$courseData['content'],$jib,$this->getId());
-        $stmt = $conn->prepare("
-            INSERT INTO course (title, description, content, categoryId, teacherId) 
-            VALUES (?, ?, ?, ?, ?)
-        ");
+        // $stmt = $conn->prepare("
+        //     INSERT INTO course (title, description, content, categoryId, teacherId) 
+        //     VALUES (?, ?, ?, ?, ?)
+        // ");
         
-        $success = $stmt->execute([
-            $courseData['title'],
-            $courseData['description'],
-            $courseData['content'],
-            $jib,
-            $courseData['teacherId'],
-        ]);
+        // $success = $stmt->execute([
+        //     $courseData['title'],
+        //     $courseData['description'],
+        //     $courseData['content'],
+        //     $jib,
+        //     $courseData['teacherId'],
+        // ]);
+        $success = $ncourse->save();
 
         if ($success && isset($courseData['tags'])) {
             $courseId = $conn->lastInsertId();

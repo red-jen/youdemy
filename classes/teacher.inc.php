@@ -12,7 +12,7 @@ class Teacher extends User {
         $jib = Category::getid($courseData['category']);
         $db = new Database();
         $conn = $db->connect();
-        
+        $ncourse = new Course(  $courseData['title'],$courseData['description'],$courseData['content'],$jib,$this->getId());
         $stmt = $conn->prepare("
             INSERT INTO course (title, description, content, categoryId, teacherId) 
             VALUES (?, ?, ?, ?, ?)

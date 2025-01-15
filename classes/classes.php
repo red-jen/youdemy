@@ -1,6 +1,6 @@
 <?php
 
-require_once('classes/config.inc.php');
+require_once('config.inc.php');
 
 class Visitor {
     public function searchCourses(string $keyword){
@@ -14,7 +14,7 @@ class Visitor {
             $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $courses;
     }
-
+  
     public static function viewCourseCatalog() {
         $db = new Database();
         $conn = $db->connect();

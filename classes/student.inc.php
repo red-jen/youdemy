@@ -1,5 +1,5 @@
 <?php
-require_once('classes/user.inc.php');
+require_once('user.inc.php');
 class Student extends User {
     private $enrolledCourses = [];
 

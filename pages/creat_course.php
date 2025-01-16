@@ -101,7 +101,7 @@
                                    value="<?php echo htmlspecialchars($tag['id']); ?>"
                                    class="rounded border-gray-300">
                             <label class="ml-2 text-sm text-gray-600">
-                                <?php echo htmlspecialchars($tag['name']); ?>
+                                <?php echo $tag['name']; ?>
                             </label>
                         </div>
                     <?php endforeach; ?>

@@ -18,7 +18,16 @@ class Course {
         $this->categoryId = $categoryId;
         $this->teacherId = $teacherId;
     }
+     public function load(){
+        $db = new Database();
+        $conn = $db->connect();
+        $stmt = $conn->query("SELECT * FROM course_tag WHERE courseid = $this->id");
+       $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($res as $r) {
+                $this->tags[] = $r['tagid']; 
+            }
 
+     }
     public function save() {
         $db = new Database();
         $conn = $db->connect();

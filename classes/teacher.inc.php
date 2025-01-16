@@ -28,7 +28,7 @@ class Teacher extends User {
         $success = $ncourse->save();
 
         if ($success && isset($courseData['tags'])) {
-            $courseId = $conn->lastInsertId();
+            $courseId = $ncourse->getid();
             $this->addCourseTags($courseId, $courseData['tags']);
         }
         

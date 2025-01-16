@@ -35,22 +35,22 @@
            
     
 
-        // Add tags if selected
-        // if (isset($_POST['tags']) && is_array($_POST['tags'])) {
-        //     foreach ($_POST['tags'] as $tagId) {
-        //         $course->addTCag($tagId);
-        //     }
-        // }
+       // Add tags if selected
+        if (isset($_POST['tags']) && is_array($_POST['tags'])) {
+            foreach ($_POST['tags'] as $tagId) {
+                $course->addTCag($tagId);
+            }
+        }
 
-        // if ($course->save()) {
-        //     echo '<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-        //             Course created successfully!
-        //           </div>';
-        // } else {
-        //     echo '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-        //             Error creating course.
-        //           </div>';
-        // }
+        if ($course->save()) {
+            echo '<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                    Course created successfully!
+                  </div>';
+        } else {
+            echo '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    Error creating course.
+                  </div>';
+        }
     }
 
     // Get categories and tags for the form

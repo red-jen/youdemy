@@ -1,9 +1,11 @@
 <?php
 require_once('config.inc.php');
 class Statistics {
-    private $id;
+    private $teacher;
     private $courseId;
     private $numberOfStudents;
+    private $numcourse;
+
 
     public function __construct($courseId = null) {
         $this->courseId = $courseId;
@@ -24,12 +26,26 @@ class Statistics {
         
         $this->numberOfStudents = $result['count'];
         
-        // Update in database
+        return $result['count'];
+    
+       
+    }
+    public function updateStudent($teacherid) {
+        $db = new Database();
+        $conn = $db->connect();
+        
         $stmt = $conn->prepare("
-            UPDATE statistics 
-            SET numberOfStudents = ? 
-            WHERE courseId = ?
+            SELECT COUNT( id) as count 
+            FROM course 
+            WHERE teacherId = ?
         ");
-        return $stmt->execute([$this->numberOfStudents, $this->courseId]);
+        $stmt->execute([$this->courseId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        $this->numcourse = $result['count'];
+        
+        return $result['count'];
+    
+       
     }
 }

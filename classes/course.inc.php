@@ -28,25 +28,26 @@ class Course {
             }
 
      }
-    public function save() {
-        $db = new Database();
-        $conn = $db->connect();
-        
-        $stmt = $conn->prepare("
-            INSERT INTO course (title, description, content, categoryId, teacherId) 
-            VALUES (?, ?, ?, ?, ?)
-        ");
-        
-        return $stmt->execute([
-            $this->title,
-            $this->description,
-            $this->content,
-            $this->categoryId,
-            $this->teacherId
-        ]);
-        $this->getid();
+     public function save() {
+        $conn = new Database();
+        $db = $conn->connect();
+        if ($this->id) {
+            // Update existing course
+            $query = "UPDATE course SET title = ?, description = ?, content = ?, category = ?, teacherId = ? WHERE id = ?";
+            $stmt = $db->prepare($query);
+            return $stmt->execute([$this->title, $this->description, $this->content, $this->categoryId, $this->teacherId, $this->id]);
+        } else {
+            // Insert new course
+            $query = "INSERT INTO course (title, description, content, categoryId, teacherId) VALUES (?, ?, ?, ?, ?)";
+            $stmt = $db->prepare($query);
+            if ($stmt->execute([$this->title, $this->description, $this->content, $this->categoryId, $this->teacherId])) {
+                $this->id = $db->lastInsertId();
+                return true;
+            }
+            return false;
+        }
     }
-    public function getid(){
+    public function getbid(){
         $db = new Database();
         $conn = $db->connect();
         
@@ -56,6 +57,19 @@ class Course {
         return $this->id;
         
     }
+
+    public function getId() {
+        return $this->id;
+    }
+
+    public function addTag($tagId) {
+        $conn = new Database();
+        $db = $conn->connect();
+        $query = "INSERT INTO course_tag (courseid, tagid) VALUES (?, ?)";
+        $stmt = $db->prepare($query);
+        return $stmt->execute([$this->id, $tagId]);
+    }
+    
 
     public static function search($keyword) {
         $db = new Database();

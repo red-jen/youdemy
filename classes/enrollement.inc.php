@@ -19,12 +19,19 @@ class Enrollment {
         $db = new Database();
         $conn = $db->connect();
         
-        $stmt = $conn->prepare("
-            INSERT INTO enrollment (studentId, courseId, enrollmentDate) 
-            VALUES (?, ?, ?)
-        ");
+        $stmt = $conn->prepare("SELECT id FROM enrollment WHERE studentId = ? AND courseId = ?");
+        $stmt->execute([$this->studentId,  $this->courseId]);
+        if ($stmt->fetch()) {
+            return ['success' => false, 'message' => 'Already enrolled in this course'];
+        }
         
-        if($stmt->execute([$this->studentId, $this->courseId, $this->enrollmentDate])) {
+        // Create enrollment
+        $stmt = $conn->prepare("INSERT INTO enrollment (studentId, courseId, enrollmentDate) VALUES (?, ?, NOW())");
+        $success = $stmt->execute([$this->studentId,  $this->courseId]);
+        
+        return ['success' => $success, 'message' => $success ? 'Enrolled successfully' : 'Enrollment failed'];;
+        
+        if($success) {
             // Update course statistics
             $stats = new Statistics($this->courseId);
             $stats->updateStudentCount();

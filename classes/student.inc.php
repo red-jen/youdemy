@@ -1,28 +1,21 @@
 <?php
 require_once('user.inc.php');
+require_once('enrollement.inc.php');
 class Student extends User {
     private $enrolledCourses = [];
 
-    public function __construct($id, $name, $email, $password) {
-        parent::__construct($id, $name, $email, $password, 'student');
+    public function __construct($id, $name, $email, $password , $created_at) {
+        parent::__construct($id, $name, $email, $password, 'student' , $created_at , 'active');
     }
-
+    
     public function enrollInCourse($courseId) {
-        $db = new Database();
-        $conn = $db->connect();
+        // $db = new Database();
+        // $conn = $db->connect();
+          $student = $this->getId();
+        $enr = new Enrollment($student , $courseId);
+        return $enr->save();
         
-        // Check if already enrolled
-        $stmt = $conn->prepare("SELECT id FROM enrollment WHERE studentId = ? AND courseId = ?");
-        $stmt->execute([$this->getId(), $courseId]);
-        if ($stmt->fetch()) {
-            return ['success' => false, 'message' => 'Already enrolled in this course'];
-        }
-        
-        // Create enrollment
-        $stmt = $conn->prepare("INSERT INTO enrollment (studentId, courseId, enrollmentDate) VALUES (?, ?, NOW())");
-        $success = $stmt->execute([$this->getId(), $courseId]);
-        
-        return ['success' => $success, 'message' => $success ? 'Enrolled successfully' : 'Enrollment failed'];
+       
     }
 
     public function viewMyCourses() {

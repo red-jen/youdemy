@@ -3,6 +3,39 @@
 require_once('config.inc.php');
 
 class Visitor {
+    public static function getCourseDetails($courseId) {
+        $db = new Database();
+        $conn = $db->connect();
+        
+        // Get course details with teacher information
+        $stmt = $conn->prepare("
+            SELECT c.*, 
+                   u.name as teacher_name,
+                   u.email as teacher_email,
+                   cat.name as category_name,
+                   (SELECT COUNT(*) FROM enrollment WHERE courseId = c.id) as enrolled_students
+            FROM course c
+            LEFT JOIN user u ON c.teacherId = u.id
+            LEFT JOIN category cat ON c.categoryId = cat.id
+            WHERE c.id = ?
+        ");
+        $stmt->execute([$courseId]);
+        $course = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($course) {
+            // Get course tags
+            $stmt = $conn->prepare("
+                SELECT t.name 
+                FROM tag t
+                JOIN course_tag ct ON t.id = ct.tagId
+                WHERE ct.courseId = ?
+            ");
+            $stmt->execute([$courseId]);
+            $course['tags'] = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        }
+        
+        return $course;
+    }
     public function searchCourses(string $keyword){
             $db = new database();
             $conn =$db->connect();

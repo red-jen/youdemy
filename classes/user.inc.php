@@ -3,78 +3,6 @@ require_once('config.inc.php');
 require_once('student.inc.php');
 require_once('admin.inc.php');
 require_once('teacher.inc.php');
-// class User {
-//     private $id;
-//     private $name;
-//     private $email;
-//     private $password;
-//     private $role; 
-
-//     public function __construct($id, $name, $email, $password, $role) {
-//         $this->id = $id;
-//         $this->name = $name;
-//         $this->email = $email;
-//         $this->password = $password;
-//         $this->role = $role;
-//     }
-
-//     // Getters
-//     public function getId() {
-//         return $this->id;
-//     }
-
-//     public function getName() {
-//         return $this->name;
-//     }
-
-//     public function getEmail() {
-//         return $this->email;
-//     }
-
-//     public function getRole() {
-//         return $this->role;
-//     }
-//     public function login(string $email, string $password): bool {
-//         $db = new Database();
-//         $conn = $db->connect();
-    
-//         // Prepare the SQL statement
-//         $stmt = $conn->prepare("SELECT * FROM user WHERE email = ?");
-//         $stmt->execute([$email]);
-    
-//         // Fetch the user data
-//         $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-//         if (!$user) {
-//             // Email does not exist
-//             echo "Error: The email address does not exist.";
-//             return false;
-//         }
-    
-//         if (!password_verify($password, $user['password'])) {
-//             // Password is incorrect
-//             echo "Error: Incorrect password.";
-//             return false;
-//         }
-    
-//         // If email and password are correct, set session
-//         $_SESSION['user'] = [
-//             'id' => $user['id'],
-//             'name' => $user['name'],
-//             'role' => $user['role']
-//         ];
-    
-//         return true;
-//     }
-    
-    
-// }
-
-
-
-
-
-
 
 
 class User {
@@ -83,17 +11,17 @@ class User {
     private $email;
     private $password;
     private $role;
-    // private $status; // For account status (active, suspended, pending)
+    private $status; // For account status (active, suspended, pending)
     private $createdAt;
     // private $lastLogin;
   
-    public function __construct($id, $name, $email, $password, $role,$createdAt) {
+    public function __construct($id, $name, $email, $password, $role,$createdAt,$status) {
         $this->id = $id;
         $this->name = $name;
         $this->email = $email;
         $this->password = $password;
         $this->role = $role;
-        // $this->status = 'pending'; // Default status for new users
+        $this->status = 'pending'; // Default status for new users
         $this->createdAt = $createdAt ; //date('Y-m-d H:i:s');
         // $this->lastLogin = null;
     }
@@ -117,7 +45,7 @@ class User {
         $db = new Database();
         $conn = $db->connect();
         
-        $stmt = $conn->prepare("SELECT * FROM user WHERE email = ? or name = ?"); // add this for statu//AND status = 'active'
+        $stmt = $conn->prepare("SELECT * FROM user WHERE email = ? or name = ? AND status = 'active' "); // add this for statu//AND status = 'active'
         $stmt->execute([$email , $email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
@@ -135,7 +63,7 @@ class User {
          if($user['role'] == 'student'){
 
             $_SESSION['user'] =serialize( new Student($user['id'],$user['name'],$user['email'],$user['password'],$user['created_at']));
-    }else  if($user['role'] == 'Teacher'){
+    }else  if($user['role'] == 'teacher'){
 
         $_SESSION['user'] =serialize( new Teacher($user['id'],$user['name'],$user['email'],$user['password'],$user['created_at']));
     }else  if($user['role'] == 'admin'){
@@ -216,13 +144,13 @@ class User {
     // }
 
     // Check if user is logged in
-    public function isLoggedIn() {
+    public static function isLoggedIn() {
         return isset($_SESSION['user']) && !empty($_SESSION['user']['id']);
     }
 
     // Check if user has specific role
     public function hasRole($role) {
-        return $this->isLoggedIn() && $_SESSION['user']['role'] === $role;
+        return $this->role === $role;
     }
 
     // Check if account is active

@@ -49,8 +49,16 @@ class Teacher extends User {
 
     public function addCourse($courseData) {
         $jib = Category::getid($courseData['category']);
-        $course = new Course(  $courseData['title'],$courseData['description'],$courseData['content'],$jib,$this->getId());
-
+        // Pass the file path correctly to the Course constructor
+        $course = new Course(
+            $courseData['title'],
+            $courseData['description'],
+            $courseData['content'],
+            $jib,
+            $this->getId(),
+            $courseData['file_path'] // Pass the file path here
+        );
+    
         if ($course->save()) {
             $courseId = $course->getId();
             if (isset($courseData['tags']) && is_array($courseData['tags'])) {
@@ -76,7 +84,7 @@ class Teacher extends User {
                     c.created_at as course_date
                 FROM course c
                 LEFT JOIN enrollment e ON c.id = e.courseId
-                WHERE c.id = ? AND c.teacherId = ?
+                WHERE c.id = ? AND c.teacherid = ?
                 GROUP BY c.id
             ");
             $stmt->execute([$courseId, $this->getId()]);
@@ -88,14 +96,35 @@ class Teacher extends User {
             SELECT 
                 c.id,
                 c.title,
-                COUNT(e.id) as total_students,
-                c.created_at as course_date
+                COUNT(e.id) as total_students
             FROM course c
             LEFT JOIN enrollment e ON c.id = e.courseId
-            WHERE c.teacherId = ?
+            WHERE c.teacherid = ?
             GROUP BY c.id
         ");
         $stmt->execute([$this->getId()]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function numcourses() {
+        $db = new Database();
+        $conn = $db->connect();
+        
+       
+        
+            $stmt = $conn->prepare("
+                SELECT 
+                    
+                    COUNT(c.id) as numcourse
+                   
+                FROM course c
+                
+                WHERE c.teacherid = ?
+                
+            ");
+            $stmt->execute([$this->getId()]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result['numcourse'];
+        }
+        
 }

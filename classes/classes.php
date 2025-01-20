@@ -36,7 +36,7 @@ class Visitor {
         
         return $course;
     }
-    public function searchCourses(string $keyword){
+    public function searchCourses( $keyword){
             $db = new database();
             $conn =$db->connect();
             $stmt = $conn->prepare("SELECT * FROM course WHERE title LIKE ?");

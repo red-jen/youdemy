@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $return = User::login($email, $password);
         if ($return['success']) {
             $success_message = $return['message'];
-            header('location: /index.php');
+            header('location: index.php');
         } else {
             $errors[] = $return['message'];
         }

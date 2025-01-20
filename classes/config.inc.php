@@ -2,7 +2,7 @@
 
 class Database {
     private $host = 'localhost';
-    private $dbname = 'Youdemy';
+    private $dbname = 'my_youdemy';
     private $user = 'root';
     private $pass = 'Ren-ji24';
 

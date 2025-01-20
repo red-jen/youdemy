@@ -20,6 +20,7 @@
       header('Location : login.php');
      if ($result['success']) {
          $success_message = $result['message'];
+         header('Location : login.php');
      } else {
          $errors = $result['errors'];
      }

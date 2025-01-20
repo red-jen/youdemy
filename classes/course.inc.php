@@ -10,14 +10,71 @@ class Course {
     private $categoryId;
     private $teacherId;
     private $tags = [];
+    private $filePath;
 
-    public function __construct($title, $description, $content, $categoryId, $teacherId) {
+    public function __construct($title, $description, $content, $categoryId, $teacherId,$filePath = null) {
         $this->title = $title;
         $this->description = $description;
         $this->content = $content;
         $this->categoryId = $categoryId;
         $this->teacherId = $teacherId;
+        $this->filePath = $filePath;
     }
+
+
+    public function delete() {
+        $db = new Database();
+        $conn = $db->connect();
+        
+        // First delete all enrollments for this course
+        $stmt = $conn->prepare("DELETE FROM enrollment WHERE courseId = ?");
+        $stmt->execute([$this->id]);
+        
+        // Then delete all course tags
+        $stmt = $conn->prepare("DELETE FROM course_tag WHERE courseId = ?");
+        $stmt->execute([$this->id]);
+        
+        // Finally delete the course itself
+        $stmt = $conn->prepare("DELETE FROM course WHERE id = ?");
+        return $stmt->execute([$this->id]);
+    }
+
+
+    public function update($title, $description, $content, $categoryId = null, $filePath = null) {
+        $this->title = $title;
+        $this->description = $description;
+        $this->content = $content;
+        
+        if ($categoryId) {
+            $this->categoryId = $categoryId;
+        }
+        
+        if ($filePath) {
+            $this->filePath = $filePath;
+        }
+        
+        $db = new Database();
+        $conn = $db->connect();
+        
+        $query = "UPDATE course 
+                 SET title = ?, 
+                     description = ?, 
+                     content = ?, 
+                     categoryId = ?, 
+                     file = ? 
+                 WHERE id = ?";
+                 
+        $stmt = $conn->prepare($query);
+        return $stmt->execute([
+            $this->title,
+            $this->description,
+            $this->content,
+            $this->categoryId,
+            $this->filePath,
+            $this->id
+        ]);
+    }
+
      public function load(){
         $db = new Database();
         $conn = $db->connect();
@@ -33,14 +90,14 @@ class Course {
         $db = $conn->connect();
         if ($this->id) {
             // Update existing course
-            $query = "UPDATE course SET title = ?, description = ?, content = ?, category = ?, teacherId = ? WHERE id = ?";
+            $query = "UPDATE course SET title = ?, description = ?, content = ?, category = ?, teacherId = ?, file = ? WHERE id = ?";
             $stmt = $db->prepare($query);
-            return $stmt->execute([$this->title, $this->description, $this->content, $this->categoryId, $this->teacherId, $this->id]);
+            return $stmt->execute([$this->title, $this->description, $this->content, $this->categoryId, $this->teacherId, $this->filePath, $this->id]);
         } else {
             // Insert new course
-            $query = "INSERT INTO course (title, description, content, categoryId, teacherId) VALUES (?, ?, ?, ?, ?)";
+            $query = "INSERT INTO course (title, description, content, categoryId, teacherId, file) VALUES (?, ?, ?, ?, ?, ?)";
             $stmt = $db->prepare($query);
-            if ($stmt->execute([$this->title, $this->description, $this->content, $this->categoryId, $this->teacherId])) {
+            if ($stmt->execute([$this->title, $this->description, $this->content, $this->categoryId, $this->teacherId, $this->filePath])) {
                 $this->id = $db->lastInsertId();
                 return true;
             }
@@ -93,7 +150,7 @@ class Course {
         $conn = $db->connect();
         
         $stmt = $conn->prepare("
-            SELECT c.*, u.name as teacher_name, cat.name as category_name
+            SELECT c.*, u.name as teacher_name, cat.name as category_name, c.file
             FROM course c
             JOIN user u ON c.teacherId = u.id
             JOIN category cat ON c.categoryId = cat.id

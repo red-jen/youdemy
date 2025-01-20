@@ -3,49 +3,11 @@ require_once('category.inc.php');
 require_once('user.inc.php');
 require_once('course.inc.php');
 class Teacher extends User {
-    public function __construct($id, $name, $email, $password , $created_at) {
-        parent::__construct($id, $name, $email, $password, 'teacher' , $created_at , 'pending');
+    public function __construct($id, $name, $email, $password , $created_at, $status) {
+        parent::__construct($id, $name, $email, $password, 'teacher' , $created_at , $status);
     }
 
-    // public function addCourse($courseData) {
-
-    //     $jib = Category::getid($courseData['category']);
-    //     $db = new Database();
-    //     $conn = $db->connect();
-    //     $ncourse = new Course(  $courseData['title'],$courseData['description'],$courseData['content'],$jib,$this->getId());
-    //     // $stmt = $conn->prepare("
-    //     //     INSERT INTO course (title, description, content, categoryId, teacherId) 
-    //     //     VALUES (?, ?, ?, ?, ?)
-    //     // ");
-        
-    //     // $success = $stmt->execute([
-    //     //     $courseData['title'],
-    //     //     $courseData['description'],
-    //     //     $courseData['content'],
-    //     //     $jib,
-    //     //     $courseData['teacherId'],
-    //     // ]);
-    //     $success = $ncourse->save();
-
-    //     if ($success && isset($courseData['tags'])) {
-    //         $courseId = $ncourse->getid();
-    //         $this->addCourseTags($courseId, $courseData['tags']);
-    //     }else{
-    //          echo "shit";
-    //     }
-        
-    //     return ['success' => $success, 'message' => $success ? 'Course added successfully' : 'Failed to add course'];
-    // }
-
-    // private function addCourseTags($courseId, $tags) {
-    //     $db = new Database();
-    //     $conn = $db->connect();
-        
-    //     foreach ($tags as $tagId) {
-    //         $stmt = $conn->prepare("INSERT INTO course_tag (courseId, tagId) VALUES (?, ?)");
-    //         $stmt->execute([$courseId, $tagId]);
-    //     }
-    // }
+    
 
     public function addCourse($courseData) {
         $jib = Category::getid($courseData['category']);

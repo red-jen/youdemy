@@ -6,7 +6,7 @@ class Category {
     private $id;
     private $name;
 
-    public function __construct($id, $name) {
+    public function __construct($id = null, $name = null) {
         $this->id = $id;
         $this->name = $name;
     }
@@ -15,7 +15,7 @@ class Category {
         $db = new Database();
         $conn = $db->connect();
         
-        $stmt = $conn->prepare("SELECT * FROM category where id = ?");
+        $stmt = $conn->prepare("SELECT * FROM category where name = ?");
         $stmt->execute([$name]);
      
          $result =   $stmt->fetch(PDO::FETCH_ASSOC);

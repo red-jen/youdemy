@@ -11,6 +11,7 @@ class Course {
     private $teacherId;
     private $tags = [];
     private $filePath;
+    
 
     public function __construct($title, $description, $content, $categoryId, $teacherId,$filePath = null) {
         $this->title = $title;
@@ -21,6 +22,68 @@ class Course {
         $this->filePath = $filePath;
     }
 
+
+
+    public function setId($id) {
+        $this->id = $id;
+    }
+
+
+    public function getTitle() {
+        return $this->title;
+    }
+
+
+    public function setTitle($title) {
+        $this->title = $title;
+    }
+
+
+    public function getDescription() {
+        return $this->description;
+    }
+
+    public function setDescription($description) {
+        $this->description = $description;
+    }
+
+    public function getContent() {
+        return $this->content;
+    }
+
+
+    public function setContent($content) {
+        $this->content = $content;
+    }
+
+    public function getCategoryId() {
+        return $this->categoryId;
+    }
+
+
+    public function setCategoryId($categoryId) {
+        $this->categoryId = $categoryId;
+    }
+
+
+    public function getTeacherId() {
+        return $this->teacherId;
+    }
+
+
+    public function setTeacherId($teacherId) {
+        $this->teacherId = $teacherId;
+    }
+
+
+    public function getTags() {
+        return $this->tags;
+    }
+
+
+    public function setTags($tags) {
+        $this->tags = $tags;
+    }
 
     public function delete() {
         $db = new Database();
@@ -40,40 +103,7 @@ class Course {
     }
 
 
-    public function update($title, $description, $content, $categoryId = null, $filePath = null) {
-        $this->title = $title;
-        $this->description = $description;
-        $this->content = $content;
-        
-        if ($categoryId) {
-            $this->categoryId = $categoryId;
-        }
-        
-        if ($filePath) {
-            $this->filePath = $filePath;
-        }
-        
-        $db = new Database();
-        $conn = $db->connect();
-        
-        $query = "UPDATE course 
-                 SET title = ?, 
-                     description = ?, 
-                     content = ?, 
-                     categoryId = ?, 
-                     file = ? 
-                 WHERE id = ?";
-                 
-        $stmt = $conn->prepare($query);
-        return $stmt->execute([
-            $this->title,
-            $this->description,
-            $this->content,
-            $this->categoryId,
-            $this->filePath,
-            $this->id
-        ]);
-    }
+   
 
      public function load(){
         $db = new Database();
@@ -90,7 +120,7 @@ class Course {
         $db = $conn->connect();
         if ($this->id) {
             // Update existing course
-            $query = "UPDATE course SET title = ?, description = ?, content = ?, category = ?, teacherId = ?, file = ? WHERE id = ?";
+            $query = "UPDATE course SET title = ?, description = ?, content = ?, categoryId = ?, teacherId = ?, file = ? WHERE id = ?";
             $stmt = $db->prepare($query);
             return $stmt->execute([$this->title, $this->description, $this->content, $this->categoryId, $this->teacherId, $this->filePath, $this->id]);
         } else {

@@ -85,12 +85,13 @@ class Visitor {
 $connection = $db->connect();
         $hashedPwd = password_hash($userData['password'], PASSWORD_DEFAULT);
 
-        $stmt = $connection->prepare("INSERT INTO User (name, email, password, role) VALUES (?, ?, ?, ?)");
+        $stmt = $connection->prepare("INSERT INTO User (name, email, password, role , status ) VALUES (?, ?, ?, ?,?)");
         $stmt->execute([
             $userData['name'],
             $userData['email'],
             $hashedPwd,
-            $userData['role']
+            $userData['role'],
+            'active'
         ]);
 
         return ['success' => true, 'message' => 'User registered successfully'];

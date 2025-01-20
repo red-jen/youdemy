@@ -38,10 +38,10 @@ class Admin extends User {
         $db = new Database();
         $conn = $db->connect();
         
-        // Start transaction
-        $conn->beginTransaction();
+      
+       
         
-        try {
+        
             // Delete user's enrollments first (if they're a student)
             $stmt = $conn->prepare("DELETE FROM enrollment WHERE studentId = ?");
             $stmt->execute([$userId]);
@@ -52,17 +52,18 @@ class Admin extends User {
             
             // Finally delete the user
             $stmt = $conn->prepare("DELETE FROM user WHERE id = ?");
-            $stmt->execute([$userId]);
+            $result = $stmt->execute([$userId]);
             
-            $conn->commit();
+            
             return ['success' => true, 'message' => 'User deleted successfully'];
-        } catch (Exception $e) {
-            $conn->rollBack();
+               if($result){
+             
             return ['success' => false, 'message' => 'Failed to delete user'];
         }
+        
     }
 
-    // Category Management Methods
+   
     public function getAllCategories() {
         return Category::getAll();
     }
@@ -80,7 +81,7 @@ class Admin extends User {
         $db = new Database();
         $conn = $db->connect();
         
-        // Check if category is in use
+     
         $stmt = $conn->prepare("SELECT COUNT(*) FROM course WHERE categoryId = ?");
         $stmt->execute([$categoryId]);
         if ($stmt->fetchColumn() > 0) {
@@ -96,7 +97,7 @@ class Admin extends User {
         ];
     }
 
-    // Tag Management Methods
+  
     public function getAllTags() {
         return Tag::getAll();
     }
@@ -114,23 +115,74 @@ class Admin extends User {
         $db = new Database();
         $conn = $db->connect();
         
-        // Start transaction
-        $conn->beginTransaction();
+       
         
-        try {
-            // Remove tag from all courses first
+   
             $stmt = $conn->prepare("DELETE FROM course_tag WHERE tagId = ?");
             $stmt->execute([$tagId]);
             
-            // Delete the tag
+          
             $stmt = $conn->prepare("DELETE FROM tag WHERE id = ?");
             $stmt->execute([$tagId]);
             
-            $conn->commit();
+     
             return ['success' => true, 'message' => 'Tag deleted successfully'];
-        } catch (Exception $e) {
-            $conn->rollBack();
+     
+          
             return ['success' => false, 'message' => 'Failed to delete tag'];
-        }
+    
     }
+
+
+
+
+
+
+
+public function getGlobalStatistics() {
+    $db = new Database();
+    $conn = $db->connect();
+    
+    // Total courses
+    $totalCourses = $conn->query("SELECT COUNT(*) FROM course")->fetchColumn();
+    
+    // Courses by category
+    $coursesByCategory = $conn->query("
+        SELECT c.name as category, COUNT(co.id) as count 
+        FROM category c 
+        LEFT JOIN course co ON c.id = co.categoryId 
+        GROUP BY  c.name
+    ")->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Course with most students
+    $mostPopularCourse = $conn->query("
+        SELECT c.title, COUNT(e.studentId) as student_count 
+        FROM course c 
+        JOIN enrollment e ON c.id = e.courseId 
+        GROUP BY  c.title 
+        ORDER BY student_count DESC 
+        LIMIT 1
+    ")->fetch(PDO::FETCH_ASSOC);
+    
+    // Top 3 teachers
+    $topTeachers = $conn->query("
+        SELECT u.name as teacher_name, 
+               COUNT(DISTINCT c.id) as course_count,
+               COUNT(DISTINCT e.studentId) as total_students
+        FROM user u 
+        JOIN course c ON u.id = c.teacherId 
+        LEFT JOIN enrollment e ON c.id = e.courseId
+        WHERE u.role = 'teacher'
+        GROUP BY u.id, u.name
+        ORDER BY total_students DESC
+        LIMIT 3
+    ")->fetchAll(PDO::FETCH_ASSOC);
+    
+    return [
+        'totalCourses' => $totalCourses,
+        'coursesByCategory' => $coursesByCategory,
+        'mostPopularCourse' => $mostPopularCourse,
+        'topTeachers' => $topTeachers
+    ];
+}
 }

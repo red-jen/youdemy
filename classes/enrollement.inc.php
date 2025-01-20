@@ -64,11 +64,11 @@ class Enrollment {
         $conn = $db->connect();
         
         $stmt = $conn->prepare("
-            SELECT u.id, u.name, u.email, e.enrollmentDate
+            SELECT u.id, u.name, u.email, e.enrollment_date
             FROM enrollment e
             JOIN user u ON e.studentId = u.id
             WHERE e.courseId = ?
-            ORDER BY e.enrollmentDate DESC
+            ORDER BY e.enrollment_date DESC
         ");
         
         $stmt->execute([$courseId]);
@@ -84,5 +84,4 @@ class Enrollment {
         
         return $stmt->fetch() !== false;
     }
-}
 }

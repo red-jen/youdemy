@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
             case 'deleteCategory':
                 $result = $admin->deleteCategory($_POST['categoryId']);
-                $message = $result ? 'Category deleted successfully' : 'Failed to delete category';
+                $message = $result['message'];
                 break;
             case 'addTag':
                 $result = $admin->addTag($_POST['tagName']);
@@ -45,6 +45,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $result = $admin->deleteTag($_POST['tagId']);
                 $message = $result ? 'Tag deleted successfully' : 'Failed to delete tag';
                 break;
+                case 'bulkAddTags':
+                    $tagNames = explode("#", $_POST['tagNames']);
+                    foreach($tagNames as $tag ){
+                          $result = $admin->addTag($tag);
+                    }
+                   
+                    $message = $result['message'];
+                    break;
         }
     }
 }
@@ -106,7 +114,7 @@ $tags = Tag::getAll();
                                         <option value="suspended" <?php echo $user['status'] === 'suspended' ? 'selected' : ''; ?>>Suspended</option>
                                         <option value="pending" <?php echo $user['status'] === 'pending' ? 'selected' : ''; ?>>Pending</option>
                                     </select>
-                                    
+
                                 </form>
                             </td>
                             <td class="px-6 py-4">
@@ -212,6 +220,88 @@ $tags = Tag::getAll();
                 </div>
             </div>
         </div>
+
+
+
+
+        <!-- Global Statistics Section -->
+<?php 
+$globalStats = $admin->getGlobalStatistics();
+?>
+<div class="mb-12">
+    <h2 class="text-2xl font-bold mb-6">Global Statistics</h2>
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Total Courses -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-2">Total Courses</h3>
+            <p class="text-3xl font-bold text-blue-600"><?php echo $globalStats['totalCourses']; ?></p>
+        </div>
+        
+        <!-- Most Popular Course -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-2">Most Popular Course</h3>
+            <?php if ($globalStats['mostPopularCourse']): ?>
+            <p class="text-lg font-medium"><?php echo htmlspecialchars($globalStats['mostPopularCourse']['title']); ?></p>
+            <p class="text-sm text-gray-600"><?php echo $globalStats['mostPopularCourse']['student_count']; ?> students</p>
+            <?php else: ?>
+            <p class="text-gray-500">No enrollments yet</p>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- Courses by Category -->
+    <div class="mt-8 bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold mb-4">Courses by Category</h3>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <?php foreach ($globalStats['coursesByCategory'] as $category): ?>
+            <div class="border rounded p-4">
+                <h4 class="font-medium"><?php echo htmlspecialchars($category['category']); ?></h4>
+                <p class="text-2xl font-bold text-blue-600"><?php echo $category['count']; ?></p>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
+    <!-- Top Teachers -->
+    <div class="mt-8 bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold mb-4">Top 3 Teachers</h3>
+        <div class="space-y-4">
+            <?php foreach ($globalStats['topTeachers'] as $index => $teacher): ?>
+            <div class="flex items-center justify-between border-b pb-4">
+                <div>
+                    <span class="text-2xl font-bold mr-2">#<?php echo $index + 1; ?></span>
+                    <span class="font-medium"><?php echo htmlspecialchars($teacher['teacher_name']); ?></span>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-600"><?php echo $teacher['course_count']; ?> courses</p>
+                    <p class="text-sm text-gray-600"><?php echo $teacher['total_students']; ?> students</p>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Tag Addition -->
+<div class="mb-12">
+    <h2 class="text-2xl font-bold mb-6">Bulk Tag Addition</h2>
+    <div class="bg-white rounded-lg shadow p-6">
+        <form method="POST">
+            <input type="hidden" name="action" value="bulkAddTags">
+            <div class="mb-4">
+                <label class="block mb-2">Add Multiple Tags</label>
+                <textarea name="tagNames" 
+                          class="w-full p-2 border rounded"
+                          rows="4"
+                          placeholder="Enter tags, one per line"></textarea>
+            </div>
+            <button type="submit" 
+                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Add Tags
+            </button>
+        </form>
+    </div>
+</div>
     </div>
 
     <!-- Footer -->

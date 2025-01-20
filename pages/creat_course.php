@@ -19,43 +19,7 @@
     session_start();
    
     
-    // Check if user is logged in and is a teacher
-    // if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'teacher') {
-    //     header('Location: login.php');
-    //     exit();
-    // }
 
-    // Handle form submission
-    // if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    //     $teacher = unserialize($_SESSION['user']);
-    //     $teacher->addCourse(array("title"=> $_POST['title'],
-    //    "description"=> $_POST['description'],
-    //     "content"=> $_POST['content'],
-    //     "category" => $_POST['category'],
-
-    //     "tags"=>$_POST['tags']));
-    // }
-           
-    
-// if (isset($_POST['tags']) && is_array($_POST['tags'])) {
-//         $courseData['tags'] = $_POST['tags'];
-//     }
-       // Add tags if selected
-        // if (isset($_POST['tags']) && is_array($_POST['tags'])) {
-        //     foreach ($_POST['tags'] as $tagId) {
-        //         $course->addTCag($tagId);
-        //     }
-        // }
-
-        // if ($course->save()) {
-        //     echo '<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-        //             Course created successfully!
-        //           </div>';
-        // } else {
-        //     echo '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-        //             Error creating course.
-        //           </div>';
-        // }
 // Updated create_course.php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $teacher = unserialize($_SESSION['user']);
@@ -153,8 +117,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <select name="category" required
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                     <?php foreach ($categories as $category): ?>
-                        <option value="<?php echo htmlspecialchars($category['id']); ?>">
-                            <?php echo htmlspecialchars($category['name']); ?>
+                        <option value="">
+                            <?php echo $category['name']; ?>
                         </option>
                     <?php endforeach; ?>
                 </select>

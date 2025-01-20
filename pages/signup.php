@@ -9,11 +9,11 @@
 
  if ($_SERVER['REQUEST_METHOD'] === 'POST') {
      $userData = [
-         'name' => $_POST['name'] ?? '',
-         'email' => $_POST['email'] ?? '',
-         'password' => $_POST['password'] ?? '',
-         'passwordRepeat' => $_POST['passwordRepeat'] ?? '',
-         'role' => $_POST['role'] ?? ''
+         'name' => htmlspecialchars($_POST['name']) ,
+         'email' => htmlspecialchars($_POST['email']) ,
+         'password' => htmlspecialchars($_POST['password']) ,
+         'passwordRepeat' => htmlspecialchars($_POST['passwordRepeat']) ,
+         'role' => htmlspecialchars($_POST['role']) 
      ];
 
      $result = Visitor::registerUser($userData);
@@ -137,12 +137,12 @@
          <form method="POST" action="signup.php">
              <div class="form-group">
                  <label for="name">Full Name:</label>
-                 <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>" required>
+                 <input type="text" id="name" name="name" value="" required>
              </div>
 
              <div class="form-group">
                  <label for="email">Email:</label>
-                 <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>" required>
+                 <input type="email" id="email" name="email" value="" required>
              </div>
 
              <div class="form-group">

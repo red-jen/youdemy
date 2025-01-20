@@ -4,8 +4,8 @@ require_once('enrollement.inc.php');
 class Student extends User {
     private $enrolledCourses = [];
 
-    public function __construct($id, $name, $email, $password , $created_at) {
-        parent::__construct($id, $name, $email, $password, 'student' , $created_at , 'active');
+    public function __construct($id, $name, $email, $password , $created_at,$status) {
+        parent::__construct($id, $name, $email, $password, 'student' , $created_at , $status);
     }
     
     public function enrollInCourse($courseId) {

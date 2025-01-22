@@ -129,4 +129,14 @@ Youdemy is an online learning platform designed to provide interactive and perso
 
 ---
 
+use case diagrame
+
+![image](https://github.com/user-attachments/assets/ac89c547-1d02-4c56-9e65-aacb38f119ce)
+
+
+class diagrame 
+![image](https://github.com/user-attachments/assets/47c267a7-2ad6-4f0d-8a44-a858d64c278c)
+
+
+
 
